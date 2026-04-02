@@ -111,14 +111,13 @@
             h1 { font-size: 1.8rem; }
         }
 
-        /* 仅卡片变瘦，内距恢复 15px */
         .api-card {
             background: var(--card-bg);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255,255,255,0.5);
             border-radius: 18px;
-            padding: 12px 18px; /* 调整为更平衡的瘦长感 */
+            padding: 12px 18px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.05);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
@@ -203,7 +202,6 @@
         }
         .icon-btn:hover { opacity: 1; }
 
-        /* 还原加号大小至 50px */
         .fab-container {
             position: fixed;
             bottom: 30px;
@@ -231,7 +229,6 @@
         }
         .fab:active { transform: scale(0.9); }
 
-        /* 还原弹窗大小至 380px */
         .modal {
             display: none;
             position: fixed;
@@ -305,9 +302,10 @@
     </div>
 </div>
 
+<!-- 添加/编辑魔法弹窗 -->
 <div id="addModal" class="modal">
     <div class="modal-content">
-        <h2 style="margin-top: 0; color: var(--accent); font-family: 'STKaiti', serif;">新魔法收录</h2>
+        <h2 id="modalTitle" style="margin-top: 0; color: var(--accent); font-family: 'STKaiti', serif;">新魔法收录</h2>
         <div class="input-group">
             <label>魔法站名</label>
             <input type="text" id="nameInput" placeholder="请输入站子名称">
@@ -337,7 +335,7 @@
 
 <div id="syncModal" class="modal">
     <div class="modal-content">
-        <h2 style="margin-top: 0; color: var(--accent); font-family: 'STKaiti', serif;">魔法同步</h2>
+        <h2 style="margin-top: 0; color: var(--accent); font-family: 'STKaiti', serif;">云端同步</h2>
         <div class="input-group">
             <label>GitHub Token</label>
             <input type="password" id="ghTokenInput" placeholder="ghp_...">
@@ -359,6 +357,7 @@
 <script>
     let apis = JSON.parse(localStorage.getItem('my_magic_apis') || '[]');
     let currentCategory = '全部';
+    let editingIndex = -1; // 记录正在编辑哪一张
 
     document.getElementById('ghTokenInput').value = localStorage.getItem('gh_token') || '';
     document.getElementById('gistIdInput').value = localStorage.getItem('gist_id') || '';
@@ -369,14 +368,21 @@
         const filtered = currentCategory === '全部' ? apis : apis.filter(a => a.category === currentCategory);
 
         filtered.forEach((api, index) => {
+            // 在原始数组中找到对应的真实索引
+            const realIndex = apis.indexOf(api);
             const card = document.createElement('div');
             card.className = 'api-card';
             card.innerHTML = `
                 <div class="card-header" onclick="toggleCard(this)">
                     <span class="station-name">${api.name}</span>
-                    <button class="icon-btn" onclick="deleteApi(event, ${index})" style="opacity: 0.3">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="red" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                    </button>
+                    <div class="action-group">
+                        <button class="icon-btn" onclick="openEditModal(event, ${realIndex})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        </button>
+                        <button class="icon-btn" onclick="deleteApi(event, ${realIndex})" style="opacity: 0.3">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="red" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="card-row">
@@ -388,9 +394,9 @@
                     </div>
                     <div class="card-row">
                         <span class="card-label">KEY</span>
-                        <input class="card-value" type="password" readonly value="${api.key}" id="key-${index}">
+                        <input class="card-value" type="password" readonly value="${api.key}" id="key-${realIndex}">
                         <div class="action-group">
-                            <button class="icon-btn" onclick="toggleKey(event, ${index})">
+                            <button class="icon-btn" onclick="toggleKey(event, ${realIndex})">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                             </button>
                             <button class="icon-btn" onclick="copyText(event, '${api.key}')">
@@ -408,6 +414,27 @@
         headerElement.parentElement.classList.toggle('expanded');
     }
 
+    function openAddModal() {
+        editingIndex = -1;
+        document.getElementById('modalTitle').innerText = "新魔法收录";
+        document.getElementById('nameInput').value = '';
+        document.getElementById('urlInput').value = '';
+        document.getElementById('keyInput').value = '';
+        document.getElementById('addModal').style.display = 'flex';
+    }
+
+    function openEditModal(event, index) {
+        event.stopPropagation(); // 阻止展开卡片
+        editingIndex = index;
+        const api = apis[index];
+        document.getElementById('modalTitle').innerText = "修补旧魔法";
+        document.getElementById('nameInput').value = api.name;
+        document.getElementById('categoryInput').value = api.category;
+        document.getElementById('urlInput').value = api.url;
+        document.getElementById('keyInput').value = api.key;
+        document.getElementById('addModal').style.display = 'flex';
+    }
+
     function saveApi() {
         const name = document.getElementById('nameInput').value;
         const category = document.getElementById('categoryInput').value;
@@ -416,18 +443,24 @@
 
         if(!name || !url || !key) return alert('魔法咒语不完整哦~');
 
-        apis.unshift({name, category, url, key});
+        if (editingIndex > -1) {
+            // 编辑模式：覆盖原有的
+            apis[editingIndex] = {name, category, url, key};
+            showToast('魔法已修正 ✨');
+        } else {
+            // 新增模式：置顶
+            apis.unshift({name, category, url, key});
+            showToast('魔法已收录 ✨');
+        }
+
         localStorage.setItem('my_magic_apis', JSON.stringify(apis));
         renderList();
-        
-        // --- 清空输入框逻辑保留 ---
-        document.getElementById('nameInput').value = '';
-        document.getElementById('urlInput').value = '';
-        document.getElementById('keyInput').value = '';
-        document.getElementById('categoryInput').value = '普通';
-
         closeModal('addModal');
-        setTimeout(() => document.querySelector('.api-card').classList.add('expanded'), 100);
+        
+        // 自动展开刚操作的那一个
+        if (editingIndex === -1) {
+            setTimeout(() => document.querySelector('.api-card').classList.add('expanded'), 100);
+        }
     }
 
     function deleteApi(event, index) {
@@ -456,7 +489,6 @@
         renderList();
     }
 
-    function openAddModal() { document.getElementById('addModal').style.display = 'flex'; }
     function openSyncModal() { document.getElementById('syncModal').style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     function showToast(msg) {
