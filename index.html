@@ -9,8 +9,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
         :root {
-            --primary: #FFB7C5; /* 樱花粉 */
-            --secondary: #E6E6FA; /* 丁香紫 */
+            --primary: #FFB7C5;
+            --secondary: #E6E6FA;
             --bg-base: linear-gradient(135deg, #FFB7C5 0%, #E6E6FA 100%);
             --flower-pattern: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 25c0-5-5-5-5-5s0 5 5 5 5-5 5-5 0 5-5 5-5 5-5 5 0-5 5-5 5 5 5 5 0-5-5-5z' fill='%23ffffff' fill-opacity='0.15'/%3E%3C/svg%3E");
             --card-bg: rgba(255, 255, 255, 0.4);
@@ -104,7 +104,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 15px;
-            align-items: start; /* 解决展开时其他卡片跟着动的问题 */
+            align-items: start;
         }
 
         @media (max-width: 600px) {
@@ -141,18 +141,17 @@
             font-family: "STKaiti", "KaiTi", serif;
         }
 
-        /* 解决跳动问题的核心 CSS */
         .card-body {
             max-height: 0;
             opacity: 0;
             overflow: hidden;
             transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
             pointer-events: none;
-            padding: 0; /* 默认无间距 */
+            padding: 0;
         }
 
         .api-card.expanded .card-body {
-            max-height: 160px; /* 合理的展开高度 */
+            max-height: 160px;
             opacity: 1;
             padding-top: 15px;
             padding-bottom: 5px;
@@ -276,11 +275,18 @@
             transform: translateX(-50%);
             background: rgba(0,0,0,0.6);
             color: white;
-            padding: 6px 15px;
+            padding: 8px 20px;
             border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             display: none;
             z-index: 300;
+        }
+
+        .sync-info {
+            font-size: 0.7rem;
+            color: #999;
+            margin-top: 5px;
+            line-height: 1.4;
         }
     </style>
 </head>
@@ -337,26 +343,29 @@
     </div>
 </div>
 
+<!-- 云端同步弹窗文字还原 -->
 <div id="syncModal" class="modal">
     <div class="modal-content">
-        <h2 style="margin-top: 0; color: var(--accent); font-family: 'STKaiti', serif;">云端同步</h2>
+        <h2 style="margin-top: 0; color: var(--accent); font-family: 'STKaiti', serif;">云端魔法同步 ☁️</h2>
         <div class="input-group">
             <label>GitHub Token</label>
             <input type="password" id="ghTokenInput" placeholder="ghp_...">
+            <div class="sync-info">通行证，用于访问您的云端书库。</div>
         </div>
         <div class="input-group">
             <label>Gist ID</label>
             <input type="text" id="gistIdInput" placeholder="上传后自动生成">
+            <div class="sync-info">卷轴编号。如果是第一次同步，请留空。</div>
         </div>
         <div class="btn-group">
-            <button class="btn btn-secondary" onclick="uploadToCloud()">上传</button>
-            <button class="btn btn-primary" onclick="downloadFromCloud()">下载</button>
+            <button class="btn btn-secondary" onclick="uploadToCloud()">上传至云端</button>
+            <button class="btn btn-primary" onclick="从云端下载()">从云端下载</button>
         </div>
         <button class="btn btn-secondary" style="width: 100%; margin-top: 10px;" onclick="closeModal('syncModal')">关闭</button>
     </div>
 </div>
 
-<div id="toast">已复刻咒语 ✨</div>
+<div id="toast">咒语复制成功 ✨</div>
 
 <script>
     let apis = JSON.parse(localStorage.getItem('my_magic_apis') || '[]');
@@ -470,7 +479,7 @@
 
     function copyText(event, text) {
         event.stopPropagation();
-        navigator.clipboard.writeText(text).then(() => showToast('已复刻咒语 ✨'));
+        navigator.clipboard.writeText(text).then(() => showToast('咒语复制成功 ✨'));
     }
 
     function toggleKey(event, index) {
@@ -494,11 +503,14 @@
         setTimeout(() => toast.style.display = 'none', 2000);
     }
 
+    // --- 魔法词汇还原 ---
+
     async function uploadToCloud() {
         const token = document.getElementById('ghTokenInput').value;
         const gistId = document.getElementById('gistIdInput').value;
-        if(!token) return alert('请输入 GitHub Token');
+        if(!token) return alert('请输入 GitHub Token 哦~');
         localStorage.setItem('gh_token', token);
+        showToast('正在开启传送门... ☁️');
         const url = gistId ? `https://api.github.com/gists/${gistId}` : 'https://api.github.com/gists';
         try {
             const resp = await fetch(url, {
@@ -510,7 +522,7 @@
                 const data = await resp.json();
                 localStorage.setItem('gist_id', data.id);
                 document.getElementById('gistIdInput').value = data.id;
-                showToast('上传成功 ✨');
+                showToast('同步成功！魔法已存入云端 ✨');
             }
         } catch (e) { alert('同步失败'); }
     }
@@ -518,7 +530,8 @@
     async function downloadFromCloud() {
         const token = document.getElementById('ghTokenInput').value;
         const gistId = document.getElementById('gistIdInput').value;
-        if(!token || !gistId) return alert('缺少 Token 或 ID');
+        if(!token || !gistId) return alert('请输入 Token 和 Gist ID 才能召回魔法哦~');
+        showToast('正在从云端召回魔法... ☁️');
         try {
             const resp = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { 'Authorization': `token ${token}` } });
             if (resp.ok) {
@@ -527,7 +540,7 @@
                 apis = JSON.parse(content);
                 localStorage.setItem('my_magic_apis', content);
                 renderList();
-                showToast('召回成功 ✨');
+                showToast('召回成功！魔法书已更新 ✨');
             }
         } catch (e) { alert('召回失败'); }
     }
