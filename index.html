@@ -104,11 +104,13 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 15px;
+            align-items: start; /* 解决展开时其他卡片跟着动的问题 */
         }
 
         @media (max-width: 600px) {
             #apiList { grid-template-columns: 1fr; }
             h1 { font-size: 1.8rem; }
+            body { padding: 15px; }
         }
 
         .api-card {
@@ -119,7 +121,7 @@
             border-radius: 18px;
             padding: 12px 18px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.05);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.2s;
             overflow: hidden;
             margin-bottom: 5px;
         }
@@ -139,15 +141,18 @@
             font-family: "STKaiti", "KaiTi", serif;
         }
 
+        /* 解决跳动问题的核心 CSS */
         .card-body {
             max-height: 0;
             opacity: 0;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
             pointer-events: none;
+            padding: 0; /* 默认无间距 */
         }
 
         .api-card.expanded .card-body {
-            max-height: 250px;
+            max-height: 160px; /* 合理的展开高度 */
             opacity: 1;
             padding-top: 15px;
             padding-bottom: 5px;
@@ -302,7 +307,6 @@
     </div>
 </div>
 
-<!-- 添加/编辑魔法弹窗 -->
 <div id="addModal" class="modal">
     <div class="modal-content">
         <h2 id="modalTitle" style="margin-top: 0; color: var(--accent); font-family: 'STKaiti', serif;">新魔法收录</h2>
@@ -357,7 +361,7 @@
 <script>
     let apis = JSON.parse(localStorage.getItem('my_magic_apis') || '[]');
     let currentCategory = '全部';
-    let editingIndex = -1; // 记录正在编辑哪一张
+    let editingIndex = -1;
 
     document.getElementById('ghTokenInput').value = localStorage.getItem('gh_token') || '';
     document.getElementById('gistIdInput').value = localStorage.getItem('gist_id') || '';
@@ -368,7 +372,6 @@
         const filtered = currentCategory === '全部' ? apis : apis.filter(a => a.category === currentCategory);
 
         filtered.forEach((api, index) => {
-            // 在原始数组中找到对应的真实索引
             const realIndex = apis.indexOf(api);
             const card = document.createElement('div');
             card.className = 'api-card';
@@ -424,7 +427,7 @@
     }
 
     function openEditModal(event, index) {
-        event.stopPropagation(); // 阻止展开卡片
+        event.stopPropagation();
         editingIndex = index;
         const api = apis[index];
         document.getElementById('modalTitle').innerText = "修补旧魔法";
@@ -440,24 +443,17 @@
         const category = document.getElementById('categoryInput').value;
         const url = document.getElementById('urlInput').value;
         const key = document.getElementById('keyInput').value;
-
         if(!name || !url || !key) return alert('魔法咒语不完整哦~');
-
         if (editingIndex > -1) {
-            // 编辑模式：覆盖原有的
             apis[editingIndex] = {name, category, url, key};
             showToast('魔法已修正 ✨');
         } else {
-            // 新增模式：置顶
             apis.unshift({name, category, url, key});
             showToast('魔法已收录 ✨');
         }
-
         localStorage.setItem('my_magic_apis', JSON.stringify(apis));
         renderList();
         closeModal('addModal');
-        
-        // 自动展开刚操作的那一个
         if (editingIndex === -1) {
             setTimeout(() => document.querySelector('.api-card').classList.add('expanded'), 100);
         }
