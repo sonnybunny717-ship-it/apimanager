@@ -33,6 +33,7 @@
             display: flex;
             justify-content: center;
             color: var(--text-color);
+            overflow: hidden;
         }
 
         body::before {
@@ -49,6 +50,9 @@
             max-width: 800px;
             position: relative;
             z-index: 1;
+            height: calc(100vh - 40px);
+            display: flex;
+            flex-direction: column;
         }
 
         header {
@@ -107,10 +111,21 @@
             align-items: start;
         }
 
+        .list-scroll {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            padding-bottom: calc(140px + env(safe-area-inset-bottom));
+            scrollbar-width: none; /* Firefox */
+        }
+        .list-scroll::-webkit-scrollbar { display: none; } /* Chrome/Safari/Edge */
+
         @media (max-width: 600px) {
             #apiList { grid-template-columns: 1fr; }
             h1 { font-size: 1.8rem; }
             body { padding: 15px; }
+            .container { height: calc(100vh - 30px); }
         }
 
         .api-card {
@@ -305,7 +320,9 @@
         <div class="tab" onclick="filterCategory('生图')">生图</div>
     </div>
 
-    <div id="apiList"></div>
+    <div class="list-scroll" id="listScroll">
+        <div id="apiList"></div>
+    </div>
 </div>
 
 <div class="fab-container">
