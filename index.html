@@ -371,6 +371,7 @@
     let apis = JSON.parse(localStorage.getItem('my_magic_apis') || '[]');
     let currentCategory = '全部';
     let editingIndex = -1;
+    let toastTimer = null;
 
     document.getElementById('ghTokenInput').value = localStorage.getItem('gh_token') || '';
     document.getElementById('gistIdInput').value = localStorage.getItem('gist_id') || '';
