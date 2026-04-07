@@ -359,7 +359,7 @@
         </div>
         <div class="btn-group">
             <button class="btn btn-secondary" onclick="uploadToCloud()">上传至云端</button>
-            <button class="btn btn-primary" onclick="从云端下载()">从云端下载</button>
+            <button class="btn btn-primary" onclick="downloadFromCloud()">从云端下载</button>
         </div>
         <button class="btn btn-secondary" style="width: 100%; margin-top: 10px;" onclick="closeModal('syncModal')">关闭</button>
     </div>
@@ -498,9 +498,13 @@
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     function showToast(msg) {
         const toast = document.getElementById('toast');
+        if (toastTimer) clearTimeout(toastTimer); // 如果有旧闹钟，先关掉
         toast.innerText = msg;
         toast.style.display = 'block';
-        setTimeout(() => toast.style.display = 'none', 2000);
+        toastTimer = setTimeout(() => {
+            toast.style.display = 'none';
+            toastTimer = null;
+        }, 3000); // 延长到 3 秒，让盼盼看清楚 ✨
     }
 
     // --- 魔法词汇还原 ---
