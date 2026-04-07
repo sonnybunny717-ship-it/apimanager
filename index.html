@@ -151,8 +151,8 @@
             display: flex;
             gap: 10px;
             width: auto;
-            max-width: calc(100vw - 110px); /* 预留右侧🔍按钮与边距 */
-            justify-content: center;
+            max-width: calc(100vw - 86px); /* 预留右侧🔍按钮与边距（尽量给 tabs 更多空间） */
+            justify-content: flex-start; /* 一旦溢出，确保从左开始，不会“露一半” */
             overflow-x: auto;
             padding-bottom: 0;
             scrollbar-width: none;
@@ -231,6 +231,10 @@
             body { padding: 15px; }
             .container { height: calc(100vh - 30px); }
             .header-orb { width: 230px; height: 92px; }
+            /* 给 tabs 更多空间：手机端稍微收紧 */
+            .tab { padding: 6px 12px; font-size: 0.8rem; }
+            .search-toggle-btn { width: 30px; height: 30px; }
+            .tabs-row { gap: 6px; }
         }
 
         .api-card {
