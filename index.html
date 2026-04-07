@@ -232,6 +232,7 @@
             transition: transform 0.2s;
         }
         .fab:active { transform: scale(0.9); }
+        .fab.dragging { cursor: grabbing; transform: none; }
 
         .modal {
             display: none;
@@ -308,7 +309,7 @@
 </div>
 
 <div class="fab-container">
-    <div class="fab" onclick="openAddModal()">
+    <div class="fab" id="fab" onclick="openAddModal()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
     </div>
 </div>
@@ -372,6 +373,7 @@
     let currentCategory = '全部';
     let editingIndex = -1;
     let toastTimer = null;
+    let fabWasDragged = false;
 
     document.getElementById('ghTokenInput').value = localStorage.getItem('gh_token') || '';
     document.getElementById('gistIdInput').value = localStorage.getItem('gist_id') || '';
@@ -428,6 +430,7 @@
     }
 
     function openAddModal() {
+        if (fabWasDragged) return;
         editingIndex = -1;
         document.getElementById('modalTitle').innerText = "新魔法收录";
         document.getElementById('nameInput').value = '';
@@ -549,6 +552,123 @@
             }
         } catch (e) { alert('召回失败'); }
     }
+
+    // --- 可拖拽悬浮加号 ---
+    (function initDraggableFab() {
+        const fab = document.getElementById('fab');
+        if (!fab) return;
+
+        const STORAGE_KEY = 'fab_pos';
+        const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+        const clampFabIntoViewport = () => {
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const rect = fab.getBoundingClientRect();
+            const left = clamp(rect.left, 10, vw - rect.width - 10);
+            const top = clamp(rect.top, 10, vh - rect.height - 10);
+            fab.style.left = `${left}px`;
+            fab.style.top = `${top}px`;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({ left, top }));
+        };
+
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            try {
+                const pos = JSON.parse(saved);
+                if (typeof pos?.left === 'number' && typeof pos?.top === 'number') {
+                    fab.style.position = 'fixed';
+                    fab.style.left = `${pos.left}px`;
+                    fab.style.top = `${pos.top}px`;
+                    fab.style.right = 'auto';
+                    fab.style.bottom = 'auto';
+                    fab.style.margin = '0';
+                    // 视口变化（电脑/手机）时把按钮夹回屏内
+                    requestAnimationFrame(clampFabIntoViewport);
+                }
+            } catch (_) {}
+        }
+
+        const DRAG_THRESHOLD_PX = 6;
+        let dragging = false;
+        let startX = 0, startY = 0;
+        let startLeft = 0, startTop = 0;
+
+        const getPoint = (e) => {
+            if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            if (e.changedTouches && e.changedTouches[0]) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+            return { x: e.clientX, y: e.clientY };
+        };
+
+        const onMove = (e) => {
+            if (!dragging) return;
+            const { x, y } = getPoint(e);
+            const dx = x - startX;
+            const dy = y - startY;
+            if (!fabWasDragged && (Math.abs(dx) > DRAG_THRESHOLD_PX || Math.abs(dy) > DRAG_THRESHOLD_PX)) {
+                fabWasDragged = true;
+            }
+            if (e.cancelable) e.preventDefault();
+
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const rect = fab.getBoundingClientRect();
+            const newLeft = clamp(startLeft + dx, 10, vw - rect.width - 10);
+            const newTop = clamp(startTop + dy, 10, vh - rect.height - 10);
+            fab.style.left = `${newLeft}px`;
+            fab.style.top = `${newTop}px`;
+        };
+
+        const onUp = () => {
+            if (!dragging) return;
+            dragging = false;
+            fab.classList.remove('dragging');
+
+            const rect = fab.getBoundingClientRect();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({ left: rect.left, top: rect.top }));
+
+            // 释放后短暂保留“这是拖动不是点击”的标记，避免触发 onclick
+            setTimeout(() => { fabWasDragged = false; }, 0);
+
+            window.removeEventListener('mousemove', onMove);
+            window.removeEventListener('mouseup', onUp);
+            window.removeEventListener('touchmove', onMove);
+            window.removeEventListener('touchend', onUp);
+            window.removeEventListener('touchcancel', onUp);
+        };
+
+        const onDown = (e) => {
+            fabWasDragged = false;
+            dragging = true;
+            fab.classList.add('dragging');
+            const { x, y } = getPoint(e);
+            startX = x; startY = y;
+
+            const rect = fab.getBoundingClientRect();
+            fab.style.position = 'fixed';
+            fab.style.left = `${rect.left}px`;
+            fab.style.top = `${rect.top}px`;
+            fab.style.right = 'auto';
+            fab.style.bottom = 'auto';
+            fab.style.margin = '0';
+            startLeft = rect.left;
+            startTop = rect.top;
+
+            window.addEventListener('mousemove', onMove, { passive: false });
+            window.addEventListener('mouseup', onUp);
+            window.addEventListener('touchmove', onMove, { passive: false });
+            window.addEventListener('touchend', onUp);
+            window.addEventListener('touchcancel', onUp);
+        };
+
+        fab.addEventListener('mousedown', onDown);
+        fab.addEventListener('touchstart', onDown, { passive: true });
+
+        window.addEventListener('resize', () => {
+            const savedNow = localStorage.getItem(STORAGE_KEY);
+            if (!savedNow) return;
+            clampFabIntoViewport();
+        });
+    })();
 
     renderList();
 </script>
