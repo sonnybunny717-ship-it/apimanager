@@ -139,16 +139,54 @@
             50% { transform: translateY(-10px) rotate(var(--rot, 0deg)); }
         }
 
+        .tabs-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+            justify-content: center;
+            padding-bottom: 5px; /* 让 tabs 滑动留白不影响对齐 */
+        }
         .tabs {
             display: flex;
             gap: 10px;
-            margin-bottom: 14px;
-            overflow-x: auto;
-            padding-bottom: 5px;
-            scrollbar-width: none;
+            width: auto;
+            max-width: calc(100vw - 110px); /* 预留右侧🔍按钮与边距 */
             justify-content: center;
+            overflow-x: auto;
+            padding-bottom: 0;
+            scrollbar-width: none;
         }
         .tabs::-webkit-scrollbar { display: none; }
+
+        .search-toggle-btn {
+            flex-shrink: 0;
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.38);
+            background: rgba(255,255,255,0.38);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            color: rgba(120,120,120,0.75);
+            opacity: 0.72;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+            transition: opacity 0.2s, transform 0.15s, color 0.2s;
+        }
+        .search-toggle-btn:hover { opacity: 0.92; }
+        .search-toggle-btn:active { transform: scale(0.94); }
+        .search-toggle-btn.active {
+            opacity: 1;
+            color: var(--accent);
+            border-color: rgba(255,139,167,0.45);
+            background: rgba(255,255,255,0.52);
+        }
 
         .tab {
             padding: 6px 16px;
@@ -363,6 +401,64 @@
             z-index: 300;
         }
 
+        /* --- 底部搜索条（召唤） --- */
+        #searchSheet {
+            position: fixed;
+            left: 50%;
+            bottom: 16px;
+            transform: translateX(-50%);
+            width: calc(100% - 30px);
+            max-width: 800px;
+            display: none;
+            z-index: 350;
+            pointer-events: none;
+        }
+        #searchSheet.open { display: flex; justify-content: center; }
+        #searchSheet.open { pointer-events: auto; }
+        .search-card {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.55);
+            border: 1px solid rgba(255,255,255,0.55);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 18px;
+            box-shadow: 0 18px 44px rgba(0,0,0,0.10);
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .search-icon {
+            width: 18px;
+            height: 18px;
+            opacity: 0.65;
+            flex-shrink: 0;
+        }
+        #searchInput {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 0.95rem;
+            color: var(--text-color);
+            padding: 8px 2px;
+            min-width: 10px;
+        }
+        .search-clear {
+            border: none;
+            background: rgba(0,0,0,0.06);
+            color: rgba(0,0,0,0.55);
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .search-clear:active { transform: scale(0.95); }
+
         .sync-info {
             font-size: 0.7rem;
             color: #999;
@@ -395,12 +491,20 @@
         </div>
     </header>
 
-    <div class="tabs" id="categoryTabs">
-        <div class="tab active" onclick="filterCategory('全部')">全部</div>
-        <div class="tab" onclick="filterCategory('普通')">普通</div>
-        <div class="tab" onclick="filterCategory('语音')">语音</div>
-        <div class="tab" onclick="filterCategory('生图')">生图</div>
-        <div class="tab" onclick="filterCategory('其他')">其他</div>
+    <div class="tabs-row">
+        <div class="tabs" id="categoryTabs">
+            <div class="tab active" onclick="filterCategory('全部')">全部</div>
+            <div class="tab" onclick="filterCategory('普通')">普通</div>
+            <div class="tab" onclick="filterCategory('语音')">语音</div>
+            <div class="tab" onclick="filterCategory('生图')">生图</div>
+            <div class="tab" onclick="filterCategory('其他')">其他</div>
+        </div>
+        <button type="button" class="search-toggle-btn" id="searchToggleBtn" title="搜索站名" aria-label="搜索站名" onclick="toggleSearchSheet(event)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="M21 21l-4.3-4.3"></path>
+            </svg>
+        </button>
     </div>
 
     <div class="list-scroll" id="listScroll">
@@ -468,6 +572,16 @@
 </div>
 
 <div id="toast">咒语复制成功 ✨</div>
+<div id="searchSheet" aria-hidden="true">
+    <div class="search-card" role="dialog" aria-label="搜索站名" onclick="event.stopPropagation()">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="M21 21l-4.3-4.3"></path>
+        </svg>
+        <input id="searchInput" type="text" placeholder="搜索站名…" autocomplete="off" />
+        <button class="search-clear" type="button" onclick="clearSearch(event)" title="清空">×</button>
+    </div>
+</div>
 
 <script>
     let apis = JSON.parse(localStorage.getItem('my_magic_apis') || '[]').map(a => ({ ...a, starred: !!a.starred }));
@@ -475,6 +589,7 @@
     let editingIndex = -1;
     let toastTimer = null;
     let fabWasDragged = false;
+    let searchQuery = '';
 
     document.getElementById('ghTokenInput').value = localStorage.getItem('gh_token') || '';
     document.getElementById('gistIdInput').value = localStorage.getItem('gist_id') || '';
@@ -482,7 +597,9 @@
     function renderList() {
         const list = document.getElementById('apiList');
         list.innerHTML = '';
-        const base = currentCategory === '全部' ? apis : apis.filter(a => a.category === currentCategory);
+        const q = (searchQuery || '').trim().toLowerCase();
+        const base0 = currentCategory === '全部' ? apis : apis.filter(a => a.category === currentCategory);
+        const base = q ? base0.filter(a => (a.name || '').toLowerCase().includes(q)) : base0;
         // 星标置顶，但保持原有顺序（原数组顺序）稳定
         const filtered = base
             .map(api => ({ api, idx: apis.indexOf(api) }))
@@ -760,6 +877,72 @@
             ro.observe(header);
             ro.observe(title);
         }
+    })();
+
+    // --- 底部搜索条（tabs 右侧 🔍 打开）---
+    function openSearch() {
+        const sheet = document.getElementById('searchSheet');
+        if (!sheet) return;
+        sheet.classList.add('open');
+        sheet.setAttribute('aria-hidden', 'false');
+        const btn = document.getElementById('searchToggleBtn');
+        if (btn) btn.classList.add('active');
+        const input = document.getElementById('searchInput');
+        if (input) {
+            input.value = searchQuery || '';
+            setTimeout(() => input.focus(), 0);
+        }
+    }
+
+    function closeSearch() {
+        const sheet = document.getElementById('searchSheet');
+        if (!sheet) return;
+        sheet.classList.remove('open');
+        sheet.setAttribute('aria-hidden', 'true');
+        const btn = document.getElementById('searchToggleBtn');
+        if (btn) btn.classList.remove('active');
+    }
+
+    function toggleSearchSheet(event) {
+        event.stopPropagation();
+        const sheet = document.getElementById('searchSheet');
+        if (sheet && sheet.classList.contains('open')) closeSearch();
+        else openSearch();
+    }
+
+    function clearSearch(event) {
+        event.stopPropagation();
+        searchQuery = '';
+        const input = document.getElementById('searchInput');
+        if (input) input.value = '';
+        renderList();
+        if (input) input.focus();
+    }
+
+    (function initSearchSheet() {
+        const input = document.getElementById('searchInput');
+        if (input) {
+            input.addEventListener('input', () => {
+                searchQuery = input.value || '';
+                renderList();
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeSearch();
+            });
+        }
+
+        // 点空白关闭（全页面）；不关闭：搜索条本身、右下角加号、tabs 右侧搜索按钮
+        document.addEventListener('click', (e) => {
+            const sheet = document.getElementById('searchSheet');
+            if (!sheet || !sheet.classList.contains('open')) return;
+            const fab = document.getElementById('fab');
+            const searchBtn = document.getElementById('searchToggleBtn');
+            const target = e.target;
+            if (sheet.contains(target)) return;
+            if (fab && fab.contains(target)) return;
+            if (searchBtn && (searchBtn === target || searchBtn.contains(target))) return;
+            closeSearch();
+        }, true);
     })();
 
     // --- 可拖拽悬浮加号 ---
