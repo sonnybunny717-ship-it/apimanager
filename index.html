@@ -75,6 +75,12 @@
             flex-direction: column;
         }
 
+        /* iOS 主屏幕模式下 dvh 会漏算安全区；standalone 使用包含安全区的 vh。 */
+        @media (display-mode: standalone) {
+            body { min-height: 100vh; }
+            .container { height: calc(100vh - var(--page-pad-top) - var(--page-pad-bottom)); }
+        }
+
         header {
             display: flex;
             justify-content: center;
