@@ -471,6 +471,209 @@
             margin-top: 5px;
             line-height: 1.4;
         }
+
+        .sync-modal-content {
+            position: relative;
+            max-width: 410px;
+            max-height: calc(100vh - 32px);
+            overflow-y: auto;
+            background:
+                radial-gradient(circle at 88% 8%, rgba(230,230,250,0.76), transparent 34%),
+                radial-gradient(circle at 10% 92%, rgba(255,183,197,0.34), transparent 36%),
+                rgba(255,255,255,0.96);
+            border: 1px solid rgba(255,255,255,0.86);
+            box-shadow: 0 24px 60px rgba(94, 73, 118, 0.18);
+        }
+
+        .sync-heading-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .sync-heading-row h2 { margin: 0; }
+
+        .sync-seal {
+            flex-shrink: 0;
+            padding: 5px 9px;
+            border-radius: 999px;
+            background: rgba(255,139,167,0.10);
+            border: 1px solid rgba(255,139,167,0.22);
+            color: #d76f8c;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+
+        .password-field {
+            position: relative;
+        }
+
+        .password-field input {
+            padding-right: 44px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 34px;
+            height: 34px;
+            border: 0;
+            border-radius: 9px;
+            background: transparent;
+            color: #a88ca7;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+        }
+
+        .password-toggle:hover { background: rgba(230,230,250,0.58); }
+
+        .remember-password {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 42px;
+            margin: -4px 0 4px;
+            padding: 8px 10px;
+            border-radius: 13px;
+            border: 1px solid rgba(230,230,250,0.9);
+            background: rgba(255,255,255,0.42);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .remember-password input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .petal-check {
+            position: relative;
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            border-radius: 8px 11px 8px 11px;
+            border: 1.5px solid rgba(255,139,167,0.46);
+            background: rgba(255,255,255,0.74);
+            box-shadow: inset 0 0 0 3px rgba(255,255,255,0.72), 0 4px 10px rgba(255,139,167,0.10);
+            transform: rotate(-4deg);
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .petal-check::after {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 3px;
+            width: 6px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg) scale(0.4);
+            opacity: 0;
+            transition: transform 0.18s ease, opacity 0.18s ease;
+        }
+
+        .remember-password input:checked + .petal-check {
+            background: linear-gradient(145deg, #ff9fb5, #d9c7f4);
+            box-shadow: 0 5px 13px rgba(255,139,167,0.28);
+            transform: rotate(4deg) scale(1.04);
+        }
+
+        .remember-password input:checked + .petal-check::after {
+            opacity: 1;
+            transform: rotate(45deg) scale(1);
+        }
+
+        .remember-password input:focus-visible + .petal-check {
+            outline: 3px solid rgba(255,139,167,0.20);
+            outline-offset: 2px;
+        }
+
+        .remember-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            font-size: 0.8rem;
+            color: #6f6670;
+        }
+
+        .remember-copy small {
+            color: #a297a3;
+            font-size: 0.67rem;
+        }
+
+        .legacy-gist-note,
+        .new-gist-result {
+            display: none;
+            margin: 12px 0 2px;
+            padding: 11px 12px;
+            border-radius: 13px;
+            font-size: 0.72rem;
+            line-height: 1.5;
+        }
+
+        .legacy-gist-note {
+            color: #8b6671;
+            background: rgba(255,183,197,0.13);
+            border: 1px dashed rgba(255,139,167,0.38);
+        }
+
+        .new-gist-result {
+            color: #62586a;
+            background: rgba(230,230,250,0.42);
+            border: 1px solid rgba(190,174,225,0.34);
+        }
+
+        .gist-result-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 7px;
+        }
+
+        .gist-result-row code {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding: 7px 9px;
+            border-radius: 9px;
+            background: rgba(255,255,255,0.72);
+            color: #8a6685;
+            font-size: 0.7rem;
+        }
+
+        .gist-copy-btn {
+            flex-shrink: 0;
+            border: 0;
+            border-radius: 9px;
+            padding: 7px 10px;
+            background: rgba(255,139,167,0.16);
+            color: #c76783;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.68rem;
+        }
+
+        .sync-actions .btn:disabled {
+            opacity: 0.55;
+            cursor: wait;
+        }
+
+        @media (max-width: 420px) {
+            .sync-modal-content { padding: 21px 18px; }
+            .sync-heading-row { align-items: flex-start; }
+            .sync-seal { margin-top: 2px; }
+        }
     </style>
 </head>
 <body>
@@ -557,8 +760,11 @@
 
 <!-- 云端同步弹窗文字还原 -->
 <div id="syncModal" class="modal">
-    <div class="modal-content">
-        <h2 style="margin-top: 0; color: var(--accent); font-family: 'STKaiti', serif;">云端魔法同步 ☁️</h2>
+    <div class="modal-content sync-modal-content">
+        <div class="sync-heading-row">
+            <h2 style="color: var(--accent); font-family: 'STKaiti', serif;">云端魔法同步 ☁️</h2>
+            <span class="sync-seal">本地加密</span>
+        </div>
         <div class="input-group">
             <label>GitHub Token</label>
             <input type="password" id="ghTokenInput" placeholder="ghp_...">
@@ -567,11 +773,37 @@
         <div class="input-group">
             <label>Gist ID</label>
             <input type="text" id="gistIdInput" placeholder="上传后自动生成">
-            <div class="sync-info">卷轴编号。如果是第一次同步，请留空。</div>
+            <div class="sync-info">新建时留空；其他设备请填入新的加密卷轴编号。</div>
         </div>
-        <div class="btn-group">
-            <button class="btn btn-secondary" onclick="uploadToCloud()">上传至云端</button>
-            <button class="btn btn-primary" onclick="downloadFromCloud()">从云端下载</button>
+        <div class="input-group">
+            <label>同步密码</label>
+            <div class="password-field">
+                <input type="password" id="syncPasswordInput" placeholder="输入只有你知道的密码" autocomplete="off">
+                <button type="button" class="password-toggle" id="syncPasswordToggle" onclick="toggleSyncPassword()" aria-label="显示同步密码" title="显示同步密码">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12z"></path><circle cx="12" cy="12" r="2.7"></circle></svg>
+                </button>
+            </div>
+            <div class="sync-info">只在浏览器里加解密，不会上传到 GitHub。</div>
+        </div>
+        <label class="remember-password" for="rememberSyncPassword">
+            <input type="checkbox" id="rememberSyncPassword">
+            <span class="petal-check" aria-hidden="true"></span>
+            <span class="remember-copy">
+                <span>在这台设备记住同步密码</span>
+                <small>默认不勾选，勾选后保存在当前浏览器</small>
+            </span>
+        </label>
+        <div class="legacy-gist-note" id="legacyGistNote">检测到旧版明文卷轴。新建加密书库不会覆盖或删除它，确认新卷轴可用后再处理旧卷轴。</div>
+        <div class="new-gist-result" id="newGistResult">
+            新的加密卷轴已生成，请把编号保存到其他设备。
+            <div class="gist-result-row">
+                <code id="newGistIdText"></code>
+                <button type="button" class="gist-copy-btn" onclick="copyNewGistId(event)">复制编号</button>
+            </div>
+        </div>
+        <div class="btn-group sync-actions">
+            <button class="btn btn-secondary" id="uploadSyncBtn" onclick="uploadToCloud()">创建加密书库</button>
+            <button class="btn btn-primary" id="downloadSyncBtn" onclick="downloadFromCloud()">从云端下载</button>
         </div>
         <button class="btn btn-secondary" style="width: 100%; margin-top: 10px;" onclick="closeModal('syncModal')">关闭</button>
     </div>
@@ -589,6 +821,7 @@
     </div>
 </div>
 
+<script src="sync-crypto.js"></script>
 <script>
     let apis = JSON.parse(localStorage.getItem('my_magic_apis') || '[]').map(a => ({ ...a, starred: !!a.starred }));
     let currentCategory = '全部';
@@ -597,8 +830,22 @@
     let fabWasDragged = false;
     let searchQuery = '';
 
+    const ENCRYPTED_GIST_FILE = 'magic_apis.encrypted.json';
+    const LEGACY_GIST_FILE = 'magic_apis.json';
+    const previousGistId = localStorage.getItem('gist_id') || '';
+    const encryptedGistId = localStorage.getItem('encrypted_gist_id') || '';
+    const legacyGistId = localStorage.getItem('legacy_gist_id') || previousGistId;
+    const rememberedSyncPassword = localStorage.getItem('magic_sync_password') || '';
+
+    if (previousGistId && !encryptedGistId && !localStorage.getItem('legacy_gist_id')) {
+        localStorage.setItem('legacy_gist_id', previousGistId);
+    }
+
     document.getElementById('ghTokenInput').value = localStorage.getItem('gh_token') || '';
-    document.getElementById('gistIdInput').value = localStorage.getItem('gist_id') || '';
+    document.getElementById('gistIdInput').value = encryptedGistId;
+    document.getElementById('syncPasswordInput').value = rememberedSyncPassword;
+    document.getElementById('rememberSyncPassword').checked = Boolean(rememberedSyncPassword);
+    document.getElementById('legacyGistNote').style.display = legacyGistId && !encryptedGistId ? 'block' : 'none';
 
     function renderList() {
         const list = document.getElementById('apiList');
@@ -745,7 +992,10 @@
         renderList();
     }
 
-    function openSyncModal() { document.getElementById('syncModal').style.display = 'flex'; }
+    function openSyncModal() {
+        updateUploadButtonLabel();
+        document.getElementById('syncModal').style.display = 'flex';
+    }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     function showToast(msg) {
         const toast = document.getElementById('toast');
@@ -758,47 +1008,192 @@
         }, 3000); // 延长到 3 秒，让盼盼看清楚 ✨
     }
 
-    // --- 魔法词汇还原 ---
+    // --- 加密云端同步 ---
+
+    function toggleSyncPassword() {
+        const input = document.getElementById('syncPasswordInput');
+        const button = document.getElementById('syncPasswordToggle');
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        button.setAttribute('aria-label', isHidden ? '隐藏同步密码' : '显示同步密码');
+        button.setAttribute('title', isHidden ? '隐藏同步密码' : '显示同步密码');
+    }
+
+    function updateUploadButtonLabel() {
+        const gistId = document.getElementById('gistIdInput').value.trim();
+        document.getElementById('uploadSyncBtn').innerText = gistId ? '上传加密更新' : '创建加密书库';
+    }
+
+    function rememberSyncCredentials() {
+        const token = document.getElementById('ghTokenInput').value.trim();
+        const password = document.getElementById('syncPasswordInput').value;
+        const shouldRememberPassword = document.getElementById('rememberSyncPassword').checked;
+        localStorage.setItem('gh_token', token);
+        if (shouldRememberPassword) localStorage.setItem('magic_sync_password', password);
+        else localStorage.removeItem('magic_sync_password');
+    }
+
+    function setSyncBusy(isBusy, message) {
+        const uploadButton = document.getElementById('uploadSyncBtn');
+        const downloadButton = document.getElementById('downloadSyncBtn');
+        uploadButton.disabled = isBusy;
+        downloadButton.disabled = isBusy;
+        if (isBusy && message) uploadButton.innerText = message;
+        else updateUploadButtonLabel();
+    }
+
+    function showNewGistResult(gistId) {
+        document.getElementById('newGistIdText').innerText = gistId;
+        document.getElementById('newGistResult').style.display = 'block';
+    }
+
+    function copyNewGistId(event) {
+        event.stopPropagation();
+        const gistId = document.getElementById('newGistIdText').innerText;
+        if (!gistId) return;
+        navigator.clipboard.writeText(gistId).then(() => showToast('新卷轴编号已复制 ✨'));
+    }
+
+    async function githubRequest(url, token, options = {}) {
+        const response = await fetch(url, {
+            ...options,
+            headers: {
+                'Accept': 'application/vnd.github+json',
+                'Authorization': `Bearer ${token}`,
+                'X-GitHub-Api-Version': '2022-11-28',
+                ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+                ...(options.headers || {})
+            }
+        });
+        if (!response.ok) {
+            let detail = '';
+            try {
+                const errorBody = await response.json();
+                detail = errorBody.message ? `：${errorBody.message}` : '';
+            } catch (_) {}
+            throw new Error(`GitHub 同步失败（${response.status}）${detail}`);
+        }
+        return response.json();
+    }
+
+    async function readGistFile(file, token) {
+        if (!file) throw new Error('云端卷轴里没有找到魔法书数据。');
+        if (!file.truncated && typeof file.content === 'string') return file.content;
+        const response = await fetch(file.raw_url, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('云端魔法书内容下载失败。');
+        return response.text();
+    }
+
+    function assertApiList(value) {
+        if (!Array.isArray(value)) throw new Error('云端数据不是有效的魔法书格式。');
+        return value.map(item => ({ ...item, starred: !!item.starred }));
+    }
 
     async function uploadToCloud() {
-        const token = document.getElementById('ghTokenInput').value;
-        const gistId = document.getElementById('gistIdInput').value;
-        if(!token) return alert('请输入 GitHub Token 哦~');
-        localStorage.setItem('gh_token', token);
-        showToast('正在开启传送门... ☁️');
-        const url = gistId ? `https://api.github.com/gists/${gistId}` : 'https://api.github.com/gists';
+        const token = document.getElementById('ghTokenInput').value.trim();
+        const gistId = document.getElementById('gistIdInput').value.trim();
+        const password = document.getElementById('syncPasswordInput').value;
+        if (!token) return alert('请输入 GitHub Token 哦~');
+        if (!password) return alert('请输入同步密码，才能封印云端魔法书。');
+
+        rememberSyncCredentials();
+        setSyncBusy(true, '正在加密...');
+        showToast('正在为魔法书施加保护咒... ✨');
+
         try {
-            const resp = await fetch(url, {
-                method: gistId ? 'PATCH' : 'POST',
-                headers: { 'Authorization': `token ${token}` },
-                body: JSON.stringify({ public: false, files: { "magic_apis.json": { "content": JSON.stringify(apis) } } })
-            });
-            if (resp.ok) {
-                const data = await resp.json();
-                localStorage.setItem('gist_id', data.id);
-                document.getElementById('gistIdInput').value = data.id;
-                showToast('同步成功！魔法已存入云端 ✨');
+            if (gistId) {
+                const existing = await githubRequest(`https://api.github.com/gists/${gistId}`, token);
+                const existingFile = existing.files?.[ENCRYPTED_GIST_FILE] || existing.files?.[LEGACY_GIST_FILE];
+                const existingContent = JSON.parse(await readGistFile(existingFile, token));
+                if (!MagicSyncCrypto.isEncryptedPayload(existingContent)) {
+                    throw new Error('这个卷轴仍是旧版明文。请清空 Gist ID，再创建新的加密书库。');
+                }
             }
-        } catch (e) { alert('同步失败'); }
+
+            const encryptedPayload = await MagicSyncCrypto.encryptJson(apis, password);
+            const body = {
+                description: 'API 魔法书 · 加密同步',
+                files: {
+                    [ENCRYPTED_GIST_FILE]: {
+                        content: JSON.stringify(encryptedPayload, null, 2)
+                    }
+                }
+            };
+            if (!gistId) body.public = false;
+
+            setSyncBusy(true, gistId ? '正在上传...' : '正在创建...');
+            const data = await githubRequest(
+                gistId ? `https://api.github.com/gists/${gistId}` : 'https://api.github.com/gists',
+                token,
+                { method: gistId ? 'PATCH' : 'POST', body: JSON.stringify(body) }
+            );
+
+            localStorage.setItem('encrypted_gist_id', data.id);
+            localStorage.setItem('gist_id', data.id);
+            document.getElementById('gistIdInput').value = data.id;
+            document.getElementById('legacyGistNote').style.display = 'none';
+            if (!gistId) showNewGistResult(data.id);
+            showToast(gistId ? '加密更新已上传 ✨' : '新的加密书库已创建 ✨');
+        } catch (error) {
+            alert(error?.message || '加密同步失败，请稍后再试。');
+        } finally {
+            setSyncBusy(false);
+        }
     }
 
     async function downloadFromCloud() {
-        const token = document.getElementById('ghTokenInput').value;
-        const gistId = document.getElementById('gistIdInput').value;
-        if(!token || !gistId) return alert('请输入 Token 和 Gist ID 才能召回魔法哦~');
+        const token = document.getElementById('ghTokenInput').value.trim();
+        const gistId = document.getElementById('gistIdInput').value.trim();
+        const password = document.getElementById('syncPasswordInput').value;
+        if (!token || !gistId) return alert('请输入 GitHub Token 和 Gist ID 才能召回魔法哦~');
+
+        rememberSyncCredentials();
+        setSyncBusy(true, '正在召回...');
         showToast('正在从云端召回魔法... ☁️');
+
         try {
-            const resp = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { 'Authorization': `token ${token}` } });
-            if (resp.ok) {
-                const data = await resp.json();
-                const content = data.files["magic_apis.json"].content;
-                apis = JSON.parse(content);
-                localStorage.setItem('my_magic_apis', content);
-                renderList();
-                showToast('召回成功！魔法书已更新 ✨');
+            const data = await githubRequest(`https://api.github.com/gists/${gistId}`, token);
+            const file = data.files?.[ENCRYPTED_GIST_FILE] || data.files?.[LEGACY_GIST_FILE];
+            const parsed = JSON.parse(await readGistFile(file, token));
+            let downloadedApis;
+
+            if (MagicSyncCrypto.isEncryptedPayload(parsed)) {
+                if (!password) throw new Error('请输入同步密码，才能解开云端魔法书。');
+                downloadedApis = assertApiList(await MagicSyncCrypto.decryptJson(parsed, password));
+                localStorage.setItem('encrypted_gist_id', gistId);
+                localStorage.setItem('gist_id', gistId);
+                document.getElementById('legacyGistNote').style.display = 'none';
+            } else {
+                downloadedApis = assertApiList(parsed);
+                localStorage.setItem('legacy_gist_id', gistId);
+                localStorage.removeItem('encrypted_gist_id');
+                document.getElementById('gistIdInput').value = '';
+                document.getElementById('legacyGistNote').style.display = 'block';
             }
-        } catch (e) { alert('召回失败'); }
+
+            apis = downloadedApis;
+            localStorage.setItem('my_magic_apis', JSON.stringify(apis));
+            renderList();
+            showToast(MagicSyncCrypto.isEncryptedPayload(parsed) ? '加密魔法书已安全召回 ✨' : '旧版卷轴已召回，请创建加密书库');
+        } catch (error) {
+            alert(error?.message || '云端召回失败，请稍后再试。');
+        } finally {
+            setSyncBusy(false);
+        }
     }
+
+    document.getElementById('gistIdInput').addEventListener('input', () => {
+        document.getElementById('newGistResult').style.display = 'none';
+        updateUploadButtonLabel();
+    });
+
+    document.getElementById('rememberSyncPassword').addEventListener('change', event => {
+        if (!event.target.checked) localStorage.removeItem('magic_sync_password');
+    });
+
+    updateUploadButtonLabel();
 
     // --- 标题线稿装饰自适应布局（像预览 A）---
     (function initHeaderDecorLayout() {
